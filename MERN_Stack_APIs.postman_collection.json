@@ -1,0 +1,331 @@
+{
+  "info": {
+    "name": "MERN Stack - Text to Image Generator APIs",
+    "description": "Complete API collection for MERN Stack Text-to-Image Generator with Authentication, Image Generation, Razorpay Payments, and OCR",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "register"]
+            },
+            "description": "Register a new user and receive JWT token. New users get 5 free credits."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"name\": \"Test User\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "login"]
+            },
+            "description": "Login with email and password to receive JWT token"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"name\": \"Test User\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get User Credits",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{TOKEN}}",
+                "description": "JWT Token from login/register"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/credits",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "credits"]
+            },
+            "description": "Get current user's credit balance (requires authentication)"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"credits\": 5,\n  \"user\": {\n    \"name\": \"Test User\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Image Generation",
+      "item": [
+        {
+          "name": "Generate Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "token",
+                "value": "{{TOKEN}}",
+                "description": "JWT Token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prompt\": \"A beautiful sunset over mountains with vibrant colors\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/image/generate-image",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "image", "generate-image"]
+            },
+            "description": "Generate image from text prompt. Costs 1 credit. Returns base64 encoded image."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Image Generated\",\n  \"creditBalance\": 4,\n  \"resultImage\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...\"\n}"
+            },
+            {
+              "name": "No Credits",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": false,\n  \"message\": \"No Credit balance\",\n  \"creditBalance\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Image History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/image/history",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "image", "history"]
+            },
+            "description": "Get user's image generation history (last 20 images)"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"history\": [\n    {\n      \"_id\": \"...\",\n      \"userId\": \"...\",\n      \"prompt\": \"A beautiful sunset\",\n      \"imageUrl\": \"data:image/png;base64,...\",\n      \"creditsUsed\": 1,\n      \"createdAt\": \"2026-01-18T...\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payment (Razorpay)",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "token",
+                "value": "{{TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"credits\": 10\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/payment/create-order",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payment", "create-order"]
+            },
+            "description": "Create Razorpay order for purchasing credits"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"orderId\": \"order_...\",\n  \"amount\": 10000,\n  \"currency\": \"INR\",\n  \"message\": \"Order created successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "token",
+                "value": "{{TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razorpayOrderId\": \"order_...\",\n  \"razorpayPaymentId\": \"pay_...\",\n  \"razorpaySignature\": \"...\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/payment/verify-payment",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payment", "verify-payment"]
+            },
+            "description": "Verify Razorpay payment and add credits to user account"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Payment verified and credits added\",\n  \"creditBalance\": 15\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{TOKEN}}"
+              }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payment/transactions",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payment", "transactions"]
+            },
+            "description": "Get user's payment transaction history"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"transactions\": [\n    {\n      \"_id\": \"...\",\n      \"userId\": \"...\",\n      \"razorpayOrderId\": \"order_...\",\n      \"amount\": 100,\n      \"credits\": 10,\n      \"status\": \"success\",\n      \"createdAt\": \"2026-01-18T...\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OCR (Image to Text)",
+      "item": [
+        {
+          "name": "Extract Text from Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "token",
+                "value": "{{TOKEN}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"imageBase64\": \"data:image/png;base64,iVBORw0KGgo...\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/ocr/extract-text",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "ocr", "extract-text"]
+            },
+            "description": "Extract text from uploaded image using OCR"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"text\": \"Extracted text from the image\",\n  \"message\": \"Text extracted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
