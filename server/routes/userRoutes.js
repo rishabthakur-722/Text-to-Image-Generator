@@ -1,11 +1,12 @@
-import express from "express";
-import { registerUser, loginUser, userCredits } from "../controllers/userController.js";
-import userAuth from "../middlewares/userAuth.js";
+import express from 'express'
+import { registerUser, loginUser, userCredits } from '../controllers/userController.js'
+import userAuth from '../middlewares/userAuth.js'
 
-const userRouter = express.Router();
+const userRouter = express.Router()
 
-userRouter.post("/register", registerUser);
-userRouter.post("/login", loginUser);
-userRouter.get("/credits", userAuth, userCredits);
+userRouter.post('/register', registerUser)
+userRouter.post('/login', loginUser)
+userRouter.get('/credits', userAuth, userCredits)
+userRouter.post('/credits', userAuth, userCredits)
 
-export default userRouter;
+export default userRouter

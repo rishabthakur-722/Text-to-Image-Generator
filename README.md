@@ -78,7 +78,7 @@ PORT=4000
 ### 3. Frontend Setup
 
 ```bash
-cd ../Frontend/.Frontend
+cd ../Frontend
 npm install
 ```
 
@@ -100,7 +100,7 @@ Server will run on `http://localhost:4000`
 
 **Start Frontend (in new terminal):**
 ```bash
-cd Frontend/.Frontend
+cd Frontend
 npm run dev
 ```
 Frontend will run on `http://localhost:5173`
@@ -159,18 +159,17 @@ MERN STACK 1/
 │   ├── package.json
 │   └── server.js
 ├── Frontend/
-│   └── .Frontend/
-│       ├── src/
+│   ├── src/
 │       │   ├── components/
 │       │   ├── Pages/
 │       │   ├── context/
 │       │   ├── assets/
 │       │   ├── App.jsx
 │       │   └── main.jsx
-│       ├── .env
-│       ├── .env.example
-│       ├── index.html
-│       └── package.json
+│   ├── .env
+│   ├── .env.example
+│   ├── index.html
+│   └── package.json
 └── MERN_Stack_APIs.postman_collection.json
 ```
 
