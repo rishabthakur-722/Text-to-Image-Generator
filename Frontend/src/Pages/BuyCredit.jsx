@@ -4,7 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { motion } from "motion/react"
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 
 
 const BuyCredit = () => {
@@ -25,14 +25,11 @@ const BuyCredit = () => {
       handler: async (response) => {
         try {
           // Verify payment
-          const { data } = await axios.post(
-            backendUrl + '/api/payment/verify-payment',
-            {
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature
-            },
-            { headers: { token } }
+          const { data } = await axiosClient.post('/api/payment/verify-payment', {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature
+          }
           );
 
           if (data.success) {
@@ -69,13 +66,10 @@ const BuyCredit = () => {
       }
 
       // Create order
-      const { data } = await axios.post(
-        backendUrl + '/api/payment/create-order',
-        {
-          amount: plan.price,
-          credits: plan.credits
-        },
-        { headers: { token } }
+      const { data } = await axiosClient.post('/api/payment/create-order', {
+        amount: plan.price,
+        credits: plan.credits
+      }
       );
 
       if (data.success) {
@@ -86,7 +80,7 @@ const BuyCredit = () => {
 
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      // toast handled by axiosClient
     } finally {
       setLoading(false);
     }
