@@ -3,15 +3,15 @@ import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Home from './pages/Home';
-import BuyCredit from './pages/BuyCredit';
-import Result from './pages/Result';
+import Home from './Pages/Home';
+import BuyCredit from './Pages/BuyCredit';
+import Result from './Pages/Result';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import { AppContext } from './context/AppContext';
 
-import ImageUpload from './pages/ImageUpload';
+import ImageUpload from './Pages/ImageUpload';
 
 function App() {
   const { showLogin } = useContext(AppContext);
