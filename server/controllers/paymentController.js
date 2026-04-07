@@ -18,6 +18,11 @@ export const createOrder = async (req, res) => {
       return res.json({ success: false, message: "Missing required fields" });
     }
 
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
     // Create order options
     const options = {
       amount: amount * 100, // Razorpay expects amount in paise
@@ -30,7 +35,7 @@ export const createOrder = async (req, res) => {
 
     // Save transaction in database
     const transaction = new transactionModel({
-      userId,
+      userId: user._id,
       razorpayOrderId: order.id,
       amount,
       credits,
@@ -60,6 +65,11 @@ export const verifyPayment = async (req, res) => {
 
     if (!userId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
       return res.json({ success: false, message: "Missing payment details" });
+    }
+
+    const userRecord = await userModel.findById(userId);
+    if (!userRecord) {
+      return res.json({ success: false, message: "User not found" });
     }
 
     // Verify signature
@@ -95,7 +105,7 @@ export const verifyPayment = async (req, res) => {
 
     // Add credits to user
     const user = await userModel.findByIdAndUpdate(
-      userId,
+      userRecord._id,
       {
         $inc: { creditBalance: transaction.credits },
         $push: { transactions: transaction._id }
@@ -119,9 +129,14 @@ export const verifyPayment = async (req, res) => {
 export const getTransactions = async (req, res) => {
   try {
     const { userId } = req.body;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.json({ success: true, transactions: [] });
+    }
 
     const transactions = await transactionModel
-      .find({ userId })
+      .find({ userId: user._id })
       .sort({ createdAt: -1 })
       .limit(20);
 

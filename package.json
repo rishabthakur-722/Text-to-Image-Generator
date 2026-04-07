@@ -1,0 +1,13 @@
+{
+  "name": "text-to-image-generator",
+  "version": "1.0.0",
+  "description": "MERN Stack Text to Image Generator",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix Frontend\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix Frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

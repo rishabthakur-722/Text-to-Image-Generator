@@ -6,6 +6,7 @@ import axios from "axios";
 export const generateImage = async (req, res) => {
   try {
     const { userId, prompt } = req.body;
+    console.log("DEBUG: generateImage - body:", req.body);
 
     if (!userId || !prompt) {
       return res.json({ success: false, message: "Missing Details" });
@@ -30,50 +31,52 @@ export const generateImage = async (req, res) => {
 
     // Try Pollinations.ai API (Free, no API key required)
     try {
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true`;
+      console.log("Attempting image generation for prompt:", prompt);
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random() * 100000)}`;
 
       const { data } = await axios.get(pollinationsUrl, {
         responseType: "arraybuffer",
-        timeout: 30000 // 30 second timeout
+        timeout: 60000 // Increased to 60 seconds
       });
 
       const base64Image = Buffer.from(data, "binary").toString("base64");
       resultImage = `data:image/png;base64,${base64Image}`;
       imageGenerated = true;
+      console.log("Image generated successfully via Pollinations");
 
     } catch (pollinationsError) {
-      console.error("Pollinations API failed:", pollinationsError.message);
+      console.error("Pollinations API failed. Error:", pollinationsError.message);
+      
+      // Fallback to Hugging Face Inference API if key is present
+      if (process.env.HUGGINGFACE_API_KEY) {
+        try {
+          console.log("Attempting Hugging Face fallback...");
+          const hfApiUrl = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1";
 
-      // Fallback to Hugging Face Inference API
-      try {
-        const hfApiUrl = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1";
+          const { data } = await axios.post(
+            hfApiUrl,
+            { inputs: prompt },
+            {
+              headers: {
+                "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                "Content-Type": "application/json"
+              },
+              responseType: "arraybuffer",
+              timeout: 60000
+            }
+          );
 
-        const { data } = await axios.post(
-          hfApiUrl,
-          { inputs: prompt },
-          {
-            headers: {
-              "Authorization": `Bearer ${process.env.HUGGINGFACE_API_KEY || "hf_placeholder"}`,
-              "Content-Type": "application/json"
-            },
-            responseType: "arraybuffer",
-            timeout: 30000
-          }
-        );
+          const base64Image = Buffer.from(data, "binary").toString("base64");
+          resultImage = `data:image/png;base64,${base64Image}`;
+          imageGenerated = true;
+          console.log("Hugging Face fallback successful!");
 
-        const base64Image = Buffer.from(data, "binary").toString("base64");
-        resultImage = `data:image/png;base64,${base64Image}`;
-        imageGenerated = true;
-
-      } catch (hfError) {
-        console.error("Hugging Face API failed:", hfError.message);
-
-        // Final fallback: Return error message
-        return res.json({
-          success: false,
-          message: "Image generation service temporarily unavailable. Please try again.",
-          creditBalance: user.creditBalance
-        });
+        } catch (hfError) {
+          console.error("Hugging Face API failed. Error:", hfError.message);
+          return res.json({ success: false, message: "Both generation services failed: " + hfError.message });
+        }
+      } else {
+        return res.json({ success: false, message: "Generation failed: " + pollinationsError.message });
       }
     }
 
@@ -102,7 +105,7 @@ export const generateImage = async (req, res) => {
 
   } catch (error) {
     console.error("Generate image error:", error);
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, message: "System Error: " + error.message });
   }
 };
 
@@ -110,9 +113,14 @@ export const generateImage = async (req, res) => {
 export const getHistory = async (req, res) => {
   try {
     const { userId } = req.body;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.json({ success: true, history: [] });
+    }
 
     const history = await imageHistoryModel
-      .find({ userId })
+      .find({ userId: user._id })
       .sort({ createdAt: -1 })
       .limit(20);
 
