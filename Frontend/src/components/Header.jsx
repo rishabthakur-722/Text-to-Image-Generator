@@ -29,24 +29,25 @@ const Header = () => {
 
     >
 
-      <motion.div className='text-stone-500 inline-flex text-center gap-2 bg-white px-6 py-1 rounded-full border border-neutral-500'
-
+      <motion.div className='text-blue-600 inline-flex items-center gap-2 bg-blue-50/50 px-6 py-2 rounded-full border border-blue-100 shadow-sm'
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8 }}
-
       >
-        <p>Best text to image generator</p>
-        <img src={assets.star_icon} alt="" />
+        <p className='text-sm font-bold tracking-wide uppercase'>Best Text to Image Generator</p>
+        <img src={assets.star_icon} alt="" className='w-4' />
       </motion.div>
 
-      <motion.h1 className='text-4xl max-w-[300px] sm:text-7xl sm:max-w-[590px] mx-auto mt-10 text-center font-bold'>
-        Turn text to <span className='text-blue-600 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-600'
-          initial={{ opacity: 0, }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 2 }}
-
-        >image</span>, in seconds.
+      <motion.h1 className='text-5xl max-w-[300px] sm:text-7xl sm:max-w-[800px] mx-auto mt-10 text-center font-bold leading-tight'>
+        Turn text to <span className='text-blue-600 relative inline-block group'>
+          image
+          <motion.span
+            className='absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full'
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ delay: 1, duration: 1.5 }}
+          />
+        </span>, in seconds.
       </motion.h1>
 
 

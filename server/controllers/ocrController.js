@@ -1,12 +1,14 @@
 import axios from "axios";
 import FormData from "form-data";
+import userModel from "../models/userModel.js";
+import imageHistoryModel from "../models/imageHistoryModel.js";
 
 // Extract text from image using OCR.space API
 export const extractText = async (req, res) => {
   try {
-    const { userId, imageBase64 } = req.body;
+    const { clerkId, imageBase64 } = req.body;
 
-    if (!userId || !imageBase64) {
+    if (!clerkId || !imageBase64) {
       return res.json({ success: false, message: "Missing required fields" });
     }
 
@@ -48,6 +50,18 @@ export const extractText = async (req, res) => {
         });
       }
 
+      // Save to history (Optional: you can choose to make this free or deduct credits)
+      const user = await userModel.findOne({ clerkId });
+      if (user) {
+        const historyData = new imageHistoryModel({
+          userId: user._id,
+          prompt: `OCR: ${extractedText.substring(0, 50)}...`,
+          imageUrl: imageBase64, // Storing the image might be heavy, but it's base64 in this app's current design
+          creditsUsed: 0 // Keep OCR free for now
+        });
+        await historyData.save();
+      }
+
       res.json({
         success: true,
         text: extractedText,
@@ -75,12 +89,15 @@ export const extractText = async (req, res) => {
 // Get image history
 export const getImageHistory = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { clerkId } = req.body;
+    const user = await userModel.findOne({ clerkId });
 
-    const imageHistoryModel = (await import("../models/imageHistoryModel.js")).default;
+    if (!user) {
+      return res.json({ success: true, history: [] });
+    }
 
     const history = await imageHistoryModel
-      .find({ userId })
+      .find({ userId: user._id })
       .sort({ createdAt: -1 })
       .limit(20);
 

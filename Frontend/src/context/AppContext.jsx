@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState, useCallback } from 'react';
 import axiosClient from '../api/axiosClient';
 import { toast } from 'react-toastify';
 
@@ -10,8 +10,9 @@ const AppContextProvider = (props) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [credit, setCredit] = useState(false);
 
-  const loadCreditsData = async () => {
+  const loadCreditsData = useCallback(async () => {
     try {
+      if (!token) return;
       const { data } = await axiosClient.get('/api/user/credits', { headers: { token } });
       if (data.success) {
         setCredit(data.credits);
@@ -19,12 +20,15 @@ const AppContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      // toast is handled by axiosClient now, but we can keep specific logic if needed
     }
-  };
+  }, [token]);
 
   const generateImage = async (prompt) => {
     try {
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        return;
+      }
       const { data } = await axiosClient.post('/api/image/generate-image', { prompt }, { headers: { token } });
       if (data.success) {
         loadCreditsData();
@@ -32,12 +36,10 @@ const AppContextProvider = (props) => {
       } else {
         toast.error(data.message);
         loadCreditsData();
-        if (data.creditBalance === 0) {
-          // navigate('/buy') 
-        }
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
 
@@ -51,7 +53,7 @@ const AppContextProvider = (props) => {
     if (token) {
       loadCreditsData();
     }
-  }, [token]);
+  }, [token, loadCreditsData]);
 
   const value = {
     user, setUser,

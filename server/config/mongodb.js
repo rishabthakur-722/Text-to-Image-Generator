@@ -6,7 +6,7 @@ mongoose.connection.on('connected', ()=>{
   console.log("DataBase Connected")
 })
 
-  await mongoose.connect(`${process.env.MONGODB_URI}/imagify`)
+  await mongoose.connect(process.env.MONGODB_URI)
 }
 
 export default connectDB;
