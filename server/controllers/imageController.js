@@ -73,10 +73,18 @@ export const generateImage = async (req, res) => {
 
         } catch (hfError) {
           console.error("Hugging Face API failed. Error:", hfError.message);
-          return res.json({ success: false, message: "Both generation services failed: " + hfError.message });
+          let errorMessage = "Both generation services failed: " + hfError.message;
+          if (hfError.response && hfError.response.status === 429) {
+             errorMessage = "Both generation services are rate-limited (Error 429). Please wait a while before trying again.";
+          }
+          return res.json({ success: false, message: errorMessage });
         }
       } else {
-        return res.json({ success: false, message: "Generation failed: " + pollinationsError.message });
+        let errorMessage = "Generation failed: " + pollinationsError.message;
+        if (pollinationsError.response && pollinationsError.response.status === 429) {
+           errorMessage = "Image Service is busy (Error 429: Too Many Requests). Please wait a minute and try again, or add a HUGGINGFACE_API_KEY in your .env file as a fallback.";
+        }
+        return res.json({ success: false, message: errorMessage });
       }
     }
 
