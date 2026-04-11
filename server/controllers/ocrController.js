@@ -6,9 +6,9 @@ import imageHistoryModel from "../models/imageHistoryModel.js";
 // Extract text from image using OCR.space API
 export const extractText = async (req, res) => {
   try {
-    const { clerkId, imageBase64 } = req.body;
+    const { userId, imageBase64 } = req.body;
 
-    if (!clerkId || !imageBase64) {
+    if (!userId || !imageBase64) {
       return res.json({ success: false, message: "Missing required fields" });
     }
 
@@ -51,7 +51,7 @@ export const extractText = async (req, res) => {
       }
 
       // Save to history (Optional: you can choose to make this free or deduct credits)
-      const user = await userModel.findOne({ clerkId });
+      const user = await userModel.findById(userId);
       if (user) {
         const historyData = new imageHistoryModel({
           userId: user._id,
@@ -89,8 +89,8 @@ export const extractText = async (req, res) => {
 // Get image history
 export const getImageHistory = async (req, res) => {
   try {
-    const { clerkId } = req.body;
-    const user = await userModel.findOne({ clerkId });
+    const { userId } = req.body;
+    const user = await userModel.findById(userId);
 
     if (!user) {
       return res.json({ success: true, history: [] });
