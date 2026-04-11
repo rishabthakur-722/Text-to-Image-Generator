@@ -74,15 +74,25 @@ export const generateImage = async (req, res) => {
         } catch (hfError) {
           console.error("Hugging Face API failed. Error:", hfError.message);
           let errorMessage = "Both generation services failed: " + hfError.message;
-          if (hfError.response && hfError.response.status === 429) {
-             errorMessage = "Both generation services are rate-limited (Error 429). Please wait a while before trying again.";
+          
+          if (hfError.response) {
+            if (hfError.response.status === 429) {
+              errorMessage = "Both generation services are rate-limited (Error 429). Please wait a while before trying again.";
+            } else if (hfError.response.status === 500) {
+              errorMessage = "Fallback Image Service is currently down (Error 500). Please try again later.";
+            }
           }
           return res.json({ success: false, message: errorMessage });
         }
       } else {
         let errorMessage = "Generation failed: " + pollinationsError.message;
-        if (pollinationsError.response && pollinationsError.response.status === 429) {
-           errorMessage = "Image Service is busy (Error 429: Too Many Requests). Please wait a minute and try again, or add a HUGGINGFACE_API_KEY in your .env file as a fallback.";
+        
+        if (pollinationsError.response) {
+          if (pollinationsError.response.status === 429) {
+            errorMessage = "Image Service is busy (Error 429: Too Many Requests). Please wait a minute and try again, or add a HUGGINGFACE_API_KEY in your .env file as a reliable fallback.";
+          } else if (pollinationsError.response.status === 500) {
+            errorMessage = "External Image Service (Pollinations) is temporarily down (Error 500). Please try again in few minutes, or setup HUGGINGFACE_API_KEY in .env for better reliability.";
+          }
         }
         return res.json({ success: false, message: errorMessage });
       }
