@@ -19,7 +19,7 @@ const AppContextProvider = (props) => {
         setUser(data.user);
       }
     } catch (error) {
-      console.log(error);
+      // Error handled silently
     }
   }, [token]);
 
@@ -38,7 +38,6 @@ const AppContextProvider = (props) => {
         loadCreditsData();
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };

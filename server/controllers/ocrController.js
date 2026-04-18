@@ -69,8 +69,7 @@ export const extractText = async (req, res) => {
       });
 
     } catch (apiError) {
-      // Fallback: Try alternative free OCR API or return graceful error
-      console.error("OCR API error:", apiError.message);
+      // Fallback: Return graceful error
 
       // Return a user-friendly error
       res.json({
@@ -81,7 +80,6 @@ export const extractText = async (req, res) => {
     }
 
   } catch (error) {
-    console.error("Extract text error:", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -89,7 +87,7 @@ export const extractText = async (req, res) => {
 // Get image history
 export const getImageHistory = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId || req.body.userId;
     const user = await userModel.findById(userId);
 
     if (!user) {
@@ -107,7 +105,6 @@ export const getImageHistory = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Get image history error:", error);
     res.json({ success: false, message: error.message });
   }
 };
