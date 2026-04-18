@@ -6,7 +6,6 @@ import axios from "axios";
 export const generateImage = async (req, res) => {
   try {
     const { userId, prompt } = req.body;
-    console.log("DEBUG: generateImage - body:", req.body);
 
     if (!userId || !prompt) {
       return res.json({ success: false, message: "Missing Details" });
@@ -31,7 +30,6 @@ export const generateImage = async (req, res) => {
 
     // Try Pollinations.ai API (Free, no API key required)
     try {
-      console.log("Attempting image generation for prompt:", prompt);
       const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random() * 100000)}`;
 
       const { data } = await axios.get(pollinationsUrl, {
@@ -39,10 +37,9 @@ export const generateImage = async (req, res) => {
         timeout: 60000 // Increased to 60 seconds
       });
 
-      const base64Image = Buffer.from(data, "binary").toString("base64");
+      const base64Image = Buffer.from(data).toString("base64");
       resultImage = `data:image/png;base64,${base64Image}`;
       imageGenerated = true;
-      console.log("Image generated successfully via Pollinations");
 
     } catch (pollinationsError) {
       console.error("Pollinations API failed. Error:", pollinationsError.message);
@@ -50,7 +47,6 @@ export const generateImage = async (req, res) => {
       // Fallback to Hugging Face Inference API if key is present
       if (process.env.HUGGINGFACE_API_KEY) {
         try {
-          console.log("Attempting Hugging Face fallback...");
           const hfApiUrl = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1";
 
           const { data } = await axios.post(
@@ -66,10 +62,9 @@ export const generateImage = async (req, res) => {
             }
           );
 
-          const base64Image = Buffer.from(data, "binary").toString("base64");
+          const base64Image = Buffer.from(data).toString("base64");
           resultImage = `data:image/png;base64,${base64Image}`;
           imageGenerated = true;
-          console.log("Hugging Face fallback successful!");
 
         } catch (hfError) {
           console.error("Hugging Face API failed. Error:", hfError.message);
@@ -130,7 +125,7 @@ export const generateImage = async (req, res) => {
 // Get user's image generation history
 export const getHistory = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId || req.body.userId;
     const user = await userModel.findById(userId);
 
     if (!user) {
