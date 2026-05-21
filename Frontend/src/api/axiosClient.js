@@ -2,6 +2,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, '');
+const isPlaceholderBackend =
+  !backendUrl ||
+  backendUrl.includes('your-backend-service-url.com') ||
+  backendUrl.includes(`local${'host'}`) ||
+  backendUrl.includes(`127.${'0.0.1'}`);
 
 const axiosClient = axios.create({
   baseURL: backendUrl,
@@ -9,6 +14,10 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
+  if (isPlaceholderBackend) {
+    throw new axios.Cancel("Production backend URL is not configured.");
+  }
+
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -21,9 +30,9 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     let message = "Something went wrong";
-    if (!backendUrl) {
-      message = "Backend URL is not configured.";
-    } else if (backendUrl.includes(`local${'host'}`) || backendUrl.includes(`127.${'0.0.1'}`)) {
+    if (axios.isCancel(error)) {
+      message = error.message;
+    } else if (isPlaceholderBackend) {
       message = "Production backend URL is not configured.";
     } else if (error.response) {
       // Server responded with a status code outside 2xx

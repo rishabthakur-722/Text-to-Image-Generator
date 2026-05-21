@@ -37,8 +37,8 @@ const Login = () => {
           toast.error(data.message)
         }
       }
-    } catch (error) {
-      toast.error(error.message)
+    } catch {
+      // API errors are displayed by the shared axios client.
     }
   }
 
