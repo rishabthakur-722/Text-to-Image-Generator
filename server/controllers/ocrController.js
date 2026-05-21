@@ -43,7 +43,7 @@ export const extractText = async (req, res) => {
       const { data } = await axios.post(ocrApiUrl, formData, {
         headers: {
           ...formData.getHeaders(),
-          "apikey": process.env.OCR_API_KEY || "K87899142388957"
+          "apikey": process.env.OCR_API_KEY
         },
         timeout: 120000
       });

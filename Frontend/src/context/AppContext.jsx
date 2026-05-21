@@ -18,7 +18,7 @@ const AppContextProvider = (props) => {
         setCredit(data.credits);
         setUser(data.user);
       }
-    } catch (error) {
+    } catch {
       // Error handled silently
     }
   }, [token]);

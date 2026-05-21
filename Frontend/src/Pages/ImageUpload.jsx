@@ -240,7 +240,11 @@ const ImageUpload = () => {
               </h4>
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                 <AnimatePresence>
-                  {history.length > 0 ? (
+                  {historyLoading ? (
+                    Array(3).fill(0).map((_, i) => (
+                      <div key={i} className="flex-shrink-0 w-32 h-32 bg-gray-50 rounded-lg animate-pulse" />
+                    ))
+                  ) : history.length > 0 ? (
                     history.slice(0, 5).map((item, index) => (
                       <motion.div
                         key={item._id}

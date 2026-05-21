@@ -3,7 +3,6 @@ import { assets } from '../assets/assets'
 import { motion, AnimatePresence } from "motion/react"
 import { AppContext } from '../context/AppContext'
 import axiosClient from '../api/axiosClient'
-import { toast } from 'react-toastify'
 
 const Result = () => {
   const [image, setImage] = useState(assets.sample_img_1);

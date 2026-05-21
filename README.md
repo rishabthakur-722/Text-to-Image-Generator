@@ -65,8 +65,10 @@ MONGO_URI=your_mongodb_atlas_connection_string_without_real_credentials
 JWT_SECRET=your_jwt_secret_key
 RAZORPAY_KEY_ID=your_razorpay_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
-OCR_API_KEY=K87899142388957
+OCR_API_KEY=your_ocr_space_api_key
 HUGGINGFACE_API_KEY=
+FRONTEND_URL=https://your-netlify-site.netlify.app
+CORS_ORIGIN=https://your-netlify-site.netlify.app
 PORT=4000
 ```
 
@@ -82,11 +84,11 @@ cd ../Frontend
 npm install
 ```
 
-Create `.env` file in `Frontend/.Frontend` directory:
+Create `.env` file in `Frontend` directory:
 
 ```env
-VITE_BACKEND_URL=http://localhost:4000
-VITE_RAZORPAY_KEY_ID=your_razorpay_test_key_id
+VITE_BACKEND_URL=https://your-backend-service-url.com
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
 ### 4. Run the Application
@@ -94,16 +96,16 @@ VITE_RAZORPAY_KEY_ID=your_razorpay_test_key_id
 **Start Backend Server:**
 ```bash
 cd server
-npm run server
+npm run dev
 ```
-Server will run on `http://localhost:4000`
+Server uses the `PORT` value from `server/.env`.
 
 **Start Frontend (in new terminal):**
 ```bash
 cd Frontend
 npm run dev
 ```
-Frontend will run on `http://localhost:5173`
+Frontend uses `VITE_BACKEND_URL` from `Frontend/.env`.
 
 ## 📱 Usage
 
@@ -192,21 +194,53 @@ MERN STACK 1/
 ### OCR
 - `POST /api/ocr/extract-text` - Extract text from image (protected)
 
-## 🌐 Deployment
+## Production Deployment
 
-### Backend (Render)
-1. Push code to GitHub
-2. Create new Web Service on Render
-3. Connect repository
-4. Add environment variables
-5. Deploy
+### Backend
+Deploy the `server` folder to a Node.js hosting service such as Render, Railway, or another service that supports long-running Express apps.
 
-### Frontend (Vercel)
-1. Push code to GitHub
-2. Import project to Vercel
-3. Set root directory to `Frontend/.Frontend`
-4. Add environment variables
-5. Deploy
+Use these settings:
+
+```txt
+Root Directory: server
+Build Command: npm install
+Start Command: npm start
+```
+
+Set these backend environment variables on the hosting dashboard:
+
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=replace_with_a_long_random_secret
+RAZORPAY_KEY_ID=your_razorpay_live_or_test_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_live_or_test_key_secret
+OCR_API_KEY=your_ocr_space_api_key
+HUGGINGFACE_API_KEY=your_huggingface_api_key
+FRONTEND_URL=https://your-netlify-site.netlify.app
+CORS_ORIGIN=https://your-netlify-site.netlify.app
+```
+
+After deployment, copy the backend HTTPS URL.
+
+### Frontend on Netlify
+This repo includes `netlify.toml`, so Netlify can auto-detect the production build settings.
+
+Use these settings if Netlify asks manually:
+
+```txt
+Base directory: Frontend
+Build command: npm run build
+Publish directory: dist
+```
+
+Set these frontend environment variables in Netlify:
+
+```env
+VITE_BACKEND_URL=https://your-backend-service-url.com
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
+
+Redeploy after changing environment variables.
 
 ## 🐛 Troubleshooting
 
