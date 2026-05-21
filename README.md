@@ -61,7 +61,7 @@ npm install
 Create `.env` file in `server` directory:
 
 ```env
-MONGODB_URI=your_mongodb_atlas_connection_string
+MONGO_URI=your_mongodb_atlas_connection_string_without_real_credentials
 JWT_SECRET=your_jwt_secret_key
 RAZORPAY_KEY_ID=your_razorpay_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
