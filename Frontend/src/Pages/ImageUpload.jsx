@@ -49,8 +49,8 @@ const ImageUpload = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
+    if (file.size > 1024 * 1024) {
+      toast.error("Image size should be less than 1MB for free OCR processing");
       return;
     }
 
@@ -90,7 +90,9 @@ const ImageUpload = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong while extracting text");
+      if (!error.response) {
+        toast.error("Something went wrong while extracting text");
+      }
     } finally {
       setLoading(false);
     }
