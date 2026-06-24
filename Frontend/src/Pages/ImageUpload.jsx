@@ -18,9 +18,7 @@ const ImageUpload = () => {
     if (!token) return;
     setHistoryLoading(true);
     try {
-      const { data } = await axiosClient.get("/api/ocr/history", {
-        headers: { token },
-      });
+      const { data } = await axiosClient.get("/api/ocr/history");
       if (data.success) {
         setHistory(data.history);
       }
@@ -75,10 +73,7 @@ const ImageUpload = () => {
 
       const { data } = await axiosClient.post(
         "/api/ocr/extract-text",
-        { imageBase64: base64Image },
-        {
-          headers: { token }, // ✅ Pass JWT token for auth
-        }
+        { imageBase64: base64Image }
       );
 
       if (data.success) {

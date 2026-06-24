@@ -16,9 +16,7 @@ const Result = () => {
   const fetchHistory = useCallback(async () => {
     if (!token) return;
     try {
-      const { data } = await axiosClient.get('/api/image/history', {
-        headers: { token }
-      });
+      const { data } = await axiosClient.get('/api/image/history');
       if (data.success) {
         setHistory(data.history);
       }

@@ -1,10 +1,10 @@
 # MERN Stack - AI Text-to-Image Generator 🎨
 
-A full-stack web application that generates images from text prompts using AI, with user authentication, credit system, and Razorpay payment integration.
+A full-stack web application that generates images from text prompts using AI, with Clerk authentication, a credit system, and Razorpay payment integration.
 
 ## ✨ Features
 
-- **User Authentication**: JWT-based secure authentication (Register/Login)
+- **User Authentication**: Clerk-powered sign in, sign up, and profile controls
 - **AI Image Generation**: Convert text prompts to images using free AI APIs
 - **Credit System**: Users get 5 free credits on signup
 - **Payment Integration**: Razorpay test mode for purchasing credits
@@ -28,8 +28,7 @@ A full-stack web application that generates images from text prompts using AI, w
 - Node.js
 - Express.js 5
 - MongoDB Atlas (Mongoose)
-- JWT Authentication
-- Bcrypt for password hashing
+- Clerk Authentication
 - Razorpay SDK
 
 ### APIs
@@ -62,7 +61,7 @@ Create `.env` file in `server` directory:
 
 ```env
 MONGO_URI=your_mongodb_atlas_connection_string_without_real_credentials
-JWT_SECRET=your_jwt_secret_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 RAZORPAY_KEY_ID=your_razorpay_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_test_key_secret
 OCR_API_KEY=your_ocr_space_api_key
@@ -88,6 +87,7 @@ Create `.env` file in `Frontend` directory:
 
 ```env
 VITE_BACKEND_URL=https://your-backend-service-url.com
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
@@ -109,7 +109,7 @@ Frontend uses `VITE_BACKEND_URL` from `Frontend/.env`.
 
 ## 📱 Usage
 
-1. **Sign Up**: Create a new account (get 5 free credits)
+1. **Sign Up**: Create a new Clerk account (get 5 free credits)
 2. **Generate Images**: Enter a text prompt and generate AI images
 3. **Buy Credits**: Purchase more credits via Razorpay (test mode)
 4. **View History**: Check your generated images
@@ -120,13 +120,12 @@ Frontend uses `VITE_BACKEND_URL` from `Frontend/.env`.
 Import the `MERN_Stack_APIs.postman_collection.json` file into Postman.
 
 ### Test Flow:
-1. **Register** → Get token
-2. **Login** → Get token
-3. **Get Credits** → Check balance
-4. **Generate Image** → Create image from prompt
-5. **Create Order** → Initiate payment
-6. **Verify Payment** → Complete payment
-7. **Get Transactions** → View payment history
+1. **Sign in with Clerk** → Use a Clerk session token
+2. **Get Credits** → Check balance
+3. **Generate Image** → Create image from prompt
+4. **Create Order** → Initiate payment
+5. **Verify Payment** → Complete payment
+6. **Get Transactions** → View payment history
 
 ### Razorpay Test Cards:
 - **Card Number**: 4111 1111 1111 1111
@@ -178,8 +177,7 @@ MERN STACK 1/
 ## 🔑 API Endpoints
 
 ### Authentication
-- `POST /api/user/register` - Register new user
-- `POST /api/user/login` - Login user
+- Clerk manages sign in, sign up, sign out, and user profile UI
 - `GET /api/user/credits` - Get user credits (protected)
 
 ### Image Generation
@@ -211,7 +209,7 @@ Set these backend environment variables on the hosting dashboard:
 
 ```env
 MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=replace_with_a_long_random_secret
+CLERK_SECRET_KEY=your_clerk_secret_key
 RAZORPAY_KEY_ID=your_razorpay_live_or_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_live_or_test_key_secret
 OCR_API_KEY=your_ocr_space_api_key
@@ -237,6 +235,7 @@ Set these frontend environment variables in Netlify:
 
 ```env
 VITE_BACKEND_URL=https://your-backend-service-url.com
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 

@@ -3,11 +3,12 @@ import { assets } from '../assets/assets'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import { motion, AnimatePresence } from 'motion/react'
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react'
 
 
 const Navbar = () => {
 
-  const { credit, user, logout, setShowLogin } = useContext(AppContext)
+  const { credit, user } = useContext(AppContext)
   const navigate = useNavigate();
   const location = useLocation();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -41,7 +42,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {user ? (
+        <SignedIn>
           <div className='flex items-center gap-3 sm:gap-4'>
             <button
               onClick={() => navigate('/buy')}
@@ -52,26 +53,27 @@ const Navbar = () => {
             </button>
             <div className='h-8 w-[1px] bg-gray-200 hidden sm:block mx-1' />
             <div className='flex items-center gap-3'>
-              <span className='text-sm font-semibold text-gray-700 hidden sm:block'>{user.name}</span>
-              <button
-                onClick={logout}
-                className='text-sm font-bold text-gray-500 hover:text-red-500 transition-colors'
-              >
-                Logout
-              </button>
+              <span className='text-sm font-semibold text-gray-700 hidden sm:block'>{user?.name}</span>
+              <UserButton afterSignOutUrl="/" />
             </div>
           </div>
-        ) : (
+        </SignedIn>
+
+        <SignedOut>
           <div className='flex items-center gap-4 sm:gap-6'>
             <Link to='/ocr' className='hidden sm:block text-gray-600 hover:text-blue-600 transition-colors font-semibold'>OCR</Link>
-            <button
-              onClick={() => setShowLogin(true)}
-              className='bg-black text-white px-8 py-2.5 sm:px-10 text-sm rounded-full font-bold hover:bg-gray-800 shadow-lg hover:shadow-black/20 transition-all active:scale-95'
-            >
-              Login
-            </button>
+            <SignInButton mode="modal">
+              <button className='hidden sm:block text-gray-600 hover:text-blue-600 transition-colors font-semibold'>
+                Sign in
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button className='bg-black text-white px-8 py-2.5 sm:px-10 text-sm rounded-full font-bold hover:bg-gray-800 shadow-lg hover:shadow-black/20 transition-all active:scale-95'>
+                Sign up
+              </button>
+            </SignUpButton>
           </div>
-        )}
+        </SignedOut>
 
         {/* Mobile Menu Toggle */}
         <button
@@ -128,9 +130,26 @@ const Navbar = () => {
               </div>
 
               <div className='mt-auto pt-8 border-t border-gray-100'>
-                <div className='flex items-center gap-4 text-gray-400'>
-                  <p className='text-sm'>Powered by AI Creativity</p>
-                </div>
+                <SignedOut>
+                  <div className='flex gap-3'>
+                    <SignInButton mode="modal">
+                      <button className='flex-1 rounded-xl border border-gray-200 px-4 py-3 font-bold text-gray-700'>
+                        Sign in
+                      </button>
+                    </SignInButton>
+                    <SignUpButton mode="modal">
+                      <button className='flex-1 rounded-xl bg-black px-4 py-3 font-bold text-white'>
+                        Sign up
+                      </button>
+                    </SignUpButton>
+                  </div>
+                </SignedOut>
+                <SignedIn>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-sm font-semibold text-gray-500'>{user?.name}</p>
+                    <UserButton afterSignOutUrl="/" />
+                  </div>
+                </SignedIn>
               </div>
             </motion.div>
           </>

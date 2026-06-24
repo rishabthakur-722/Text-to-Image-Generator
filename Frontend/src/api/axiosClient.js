@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+let authTokenGetter = null;
+
+export const setAuthTokenGetter = (getter) => {
+  authTokenGetter = getter;
+};
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, '');
 const isPlaceholderBackend =
   !backendUrl ||
@@ -13,15 +19,14 @@ const axiosClient = axios.create({
   withCredentials: true, // Important for cookies/sessions
 });
 
-axiosClient.interceptors.request.use((config) => {
+axiosClient.interceptors.request.use(async (config) => {
   if (isPlaceholderBackend) {
     throw new axios.Cancel("Production backend URL is not configured.");
   }
 
-  const token = localStorage.getItem('token');
+  const token = authTokenGetter ? await authTokenGetter() : null;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    config.headers.token = token;
   }
   return config;
 });
@@ -38,7 +43,6 @@ axiosClient.interceptors.response.use(
       // Server responded with a status code outside 2xx
       message = error.response.data.message || message;
       if (error.response.status === 401) {
-        localStorage.removeItem('token');
         window.location.href = '/';
       }
     } else if (error.request) {

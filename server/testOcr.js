@@ -3,29 +3,18 @@ import fs from "fs";
 import "dotenv/config";
 
 const apiBaseUrl = process.env.API_BASE_URL;
+const token = process.env.CLERK_TEST_TOKEN;
 
 if (!apiBaseUrl) {
   throw new Error("API_BASE_URL is required for OCR tests.");
 }
 
+if (!token) {
+  throw new Error("CLERK_TEST_TOKEN is required for protected OCR endpoint tests.");
+}
+
 const testOcr = async () => {
   try {
-    console.log("Registering test user...");
-    const email = `test_${Date.now()}@test.com`;
-    const regRes = await axios.post(`${apiBaseUrl}/api/user/register`, {
-      name: "Test OCR User",
-      email,
-      password: "password123"
-    });
-
-    if (!regRes.data.success) {
-      console.log("Registration failed:", regRes.data);
-      return;
-    }
-
-    const token = regRes.data.token;
-    console.log("Registered successfully. Token:", token);
-
     console.log("Reading test image...");
     const imagePath = "C:\\Users\\Administrator\\.gemini\\antigravity\\brain\\7b803d28-2da9-4db1-9940-1f8bbaa926ce\\test_ocr_image_1779160265242.png";
     const imageBuffer = fs.readFileSync(imagePath);
@@ -36,7 +25,6 @@ const testOcr = async () => {
       imageBase64: base64Image
     }, {
       headers: {
-        token,
         Authorization: `Bearer ${token}`
       }
     });

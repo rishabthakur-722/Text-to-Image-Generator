@@ -1,5 +1,6 @@
 import express from "express"
 import cors from "cors"
+import { clerkMiddleware } from "@clerk/express"
 import "dotenv/config"
 
 import connectDB from "./config/mongodb.js"
@@ -11,7 +12,7 @@ import ocrRouter from "./routes/ocrRoutes.js"
 const app = express()
 const PORT = process.env.PORT || 4000
 
-const requiredEnv = ["MONGO_URI", "JWT_SECRET", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "OCR_API_KEY"]
+const requiredEnv = ["MONGO_URI", "CLERK_SECRET_KEY", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "OCR_API_KEY"]
 const missingEnv = requiredEnv.filter((key) => !process.env[key])
 
 if (missingEnv.length) {
@@ -40,6 +41,7 @@ app.set("trust proxy", 1)
 app.use(express.json({ limit: "50mb" }))
 app.use(express.urlencoded({ limit: "50mb", extended: true }))
 app.use(cors(corsOptions))
+app.use(clerkMiddleware())
 
 const startServer = async () => {
   try {
