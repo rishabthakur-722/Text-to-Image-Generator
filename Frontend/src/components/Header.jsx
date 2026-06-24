@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 
 const Header = () => {
 
-  const { user, setShowLogin } = useContext(AppContext)
+  const { user, openSignIn } = useContext(AppContext)
   const navigate = useNavigate();
 
   const onClickHandler = () => {
@@ -15,7 +15,7 @@ const Header = () => {
       navigate('/result')
 
     } else {
-      setShowLogin(true)
+      openSignIn()
     }
 
   }

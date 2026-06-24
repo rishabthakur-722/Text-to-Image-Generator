@@ -9,7 +9,7 @@ import axiosClient from '../api/axiosClient';
 
 const BuyCredit = () => {
 
-  const { user, loadCreditsData, setShowLogin } = useContext(AppContext);
+  const { user, loadCreditsData, openSignIn } = useContext(AppContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -67,7 +67,7 @@ const BuyCredit = () => {
   const paymentRazorpay = async (planId) => {
     try {
       if (!user) {
-        setShowLogin(true);
+        openSignIn();
         return;
       }
       setLoading(true);

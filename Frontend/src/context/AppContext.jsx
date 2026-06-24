@@ -11,7 +11,7 @@ const AppContextProvider = (props) => {
   const { user: clerkUser } = useUser();
   const { openSignIn, signOut } = useClerk();
   const [appUser, setAppUser] = useState(null);
-  const [showLogin, setShowLogin] = useState(false);
+
   const [credit, setCredit] = useState(false);
   const token = isSignedIn ? 'clerk-session' : '';
   const user = isSignedIn
@@ -75,7 +75,7 @@ const AppContextProvider = (props) => {
 
   const value = {
     user, setUser: setAppUser,
-    showLogin, setShowLogin,
+
     token,
     credit, setCredit,
     loadCreditsData,
