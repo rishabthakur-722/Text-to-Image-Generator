@@ -25,7 +25,7 @@ export const createOrder = async (req, res) => {
 
     // Create order options
     const options = {
-      amount: amount * 100, // Razorpay expects amount in paise
+      amount: Math.round(amount * 100), // Razorpay expects amount in paise (integer)
       currency: "INR",
       receipt: `receipt_${Date.now()}`
     };

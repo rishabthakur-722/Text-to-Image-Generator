@@ -20,9 +20,6 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(async (config) => {
-  if (isPlaceholderBackend) {
-    throw new axios.Cancel("Production backend URL is not configured.");
-  }
 
   const token = authTokenGetter ? await authTokenGetter() : null;
   if (token) {
@@ -37,8 +34,6 @@ axiosClient.interceptors.response.use(
     let message = "Something went wrong";
     if (axios.isCancel(error)) {
       message = error.message;
-    } else if (isPlaceholderBackend) {
-      message = "Production backend URL is not configured.";
     } else if (error.response) {
       // Server responded with a status code outside 2xx
       message = error.response.data.message || message;
